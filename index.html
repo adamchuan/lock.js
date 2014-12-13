@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" id="viewport" name="viewport">
+</head>
+<style>
+	body{
+	-webkit-touch-callout: none;
+	-moz-touch-callout: none;
+	-ms-touch-callout: none;
+	-o-touch-callout: none;
+	touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	}
+</style>
+<body>
+	<div class="lockWrap"></div>
+</body>
+<script type="text/javascript" src='lock.js'></script>
+<script>
+	var ul = new lock({
+		wrap:document.querySelector(".lockWrap"), //需要添加canvas的父级 默认为body
+		r : 45, //圆的半径 默认为30
+		gap : 5, //圆之间的间隔 
+        size : 4, // 行和列的个数，默认为3
+		callback : function(touchList){  //touchend 抬手时的回调 传入的参数为 手势的数组
+			alert(touchList);
+			//ul.reDrawPanel();
+			ul.drawErrorPanel();
+		}
+	});
+</script>
+</html>
