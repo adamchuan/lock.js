@@ -1,6 +1,7 @@
 /*
     生成一个解锁的canvas
 */
+'use strict'
 var lock = (function(){
     /* --- 定义公用变量和方法 --- */
     var _isAndroid = navigator.userAgent.match(/android/i);
@@ -8,7 +9,7 @@ var lock = (function(){
     if(_isAndroid) {
         _androidVersion = parseFloat(navigator.userAgent.slice(navigator.userAgent.indexOf("Android")+8));
     }
-    var _isTouch = document.hasOwnProperty("ontouchstart");
+    var _isTouch = 'ontouchstart' in window;
     var _touchstart = _isTouch ? 'touchstart' : 'mousedown',
         _touchmove = _isTouch  ? 'touchmove' : 'mousemove',
         _touchend = _isTouch ? 'touchend' : 'mouseup';
@@ -50,6 +51,7 @@ var lock = (function(){
             r_temp = r + gap,
             ctx,
             canvasPos,
+            scale = 1,
             disable = false; //是否启动解锁
         /**
          * 初始化canvas
@@ -60,9 +62,16 @@ var lock = (function(){
                 x,
                 y,
                 hasChoose = false;
+
             canvas.width = boxSize;
             canvas.height = boxSize;
+            canvas.style.width = '100%'; 
 
+            wrap.appendChild(canvas);
+
+            setTimeout(function(){
+                scale = canvas.width / canvas.offsetWidth;
+            },100);
             ctx = canvas.getContext('2d');
 
             for(var i = 0 ; i < size ; i++){ //rows
@@ -83,7 +92,6 @@ var lock = (function(){
             canvas.addEventListener(_touchmove,function(e){
                 e.preventDefault();
             });
-            wrap.appendChild(canvas);
             addChooseListener();
         }
         /**
@@ -94,6 +102,7 @@ var lock = (function(){
          * @param posY 结束点的Y
          */
         var drawMoveLine = function(startX,startY,posX,posY){
+            ctx.save();
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.lineTo(posX,posY);
@@ -101,6 +110,7 @@ var lock = (function(){
             ctx.strokeStyle = lineColor;
             ctx.stroke();
             ctx.closePath();
+            ctx.restore();
         }
         /**
          * 生成一条线连接两个圆
@@ -112,6 +122,7 @@ var lock = (function(){
                 y1 = center[startIndex].y,
                 x2 = center[endIndex].x,
                 y2 = center[endIndex].y;
+            ctx.save();
             ctx.beginPath(); // 开始路径绘制
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
@@ -119,6 +130,7 @@ var lock = (function(){
             ctx.strokeStyle = color || lineColor ; // 设置线的颜色
             ctx.stroke();  // 进行线的着色，这时整条线才变得可见
             ctx.closePath();
+            ctx.restore();
         }
          /**
          * 判断某个点在不在某个圆内
@@ -242,12 +254,13 @@ var lock = (function(){
             }
             canvas.addEventListener(_touchstart,startListener);
             function startListener(e){
+                canvas.style.pointer = 'cursor';
                 if(drawing || disable){
                     return ;
                 }
                 canvasPos = getPosition(canvas); //这个应该放到scroll后去计算
-                startX = e.touches[0].pageX - canvasPos.x + _offsetLeft;
-                startY = e.touches[0].pageY - canvasPos.y + _offsetTop;
+                startX = ((e.pageX || e.touches[0].pageX) - canvasPos.x + _offsetLeft) * scale;
+                startY = ((e.pageY || e.touches[0].pageY) - canvasPos.y + _offsetTop ) * scale;
                 var index = checkInCircle(startX,startY);
                 if(index !== null){
                     drawing = true;
@@ -264,8 +277,8 @@ var lock = (function(){
                     return ;
                 }
                 e.stopPropagation();
-                posX = e.touches[0].pageX - canvasPos.x + _offsetLeft;
-                posY = e.touches[0].pageY - canvasPos.y + _offsetTop;
+                posX = ((e.pageX || e.touches[0].pageX) - canvasPos.x + _offsetLeft) * scale;
+                posY = ((e.pageY || e.touches[0].pageY) - canvasPos.y + _offsetTop) * scale;
                 var index = checkInCircle(posX,posY);
                 showCurrentLockBg();
                 if(index === null || center[index].hasChoose ){
@@ -281,6 +294,7 @@ var lock = (function(){
 
             }
             var  endListener = function(e){
+                canvas.style.pointer = '';    
                 if(!drawing || disable){
                     return ;
                 }

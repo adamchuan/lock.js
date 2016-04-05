@@ -2,7 +2,7 @@
 <html lang="zh-cn">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>lock.js</title>
 	<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" id="viewport" name="viewport">
 </head>
 <style>
@@ -18,9 +18,30 @@
 	-o-user-select: none;
 	user-select: none;
 	}
+	.phone{
+		margin:0 auto;
+		width:360px;
+		height:730px;
+		background-image:url('./images/iphone.png');
+		overflow: hidden;
+	}
+	.screen{
+		margin:100px auto 0 ;
+		width:320px;
+		height: 480px;
+		border:1px solid #000;
+		box-sizing: border-box;
+	}
+	.lockWrap{
+		margin:100px auto 0;
+	}
 </style>
-<body>
-	<div class="lockWrap"></div>
+<body>	
+	<div class="phone">
+		<div class="screen">
+			<div class="lockWrap"></div>
+		</div>
+	</div>
 </body>
 <script type="text/javascript" src='lock.js'></script>
 <script>
@@ -28,7 +49,7 @@
 		wrap:document.querySelector(".lockWrap"), //需要添加canvas的父级 默认为body
 		r : 45, //圆的半径 默认为30
 		gap : 5, //圆之间的间隔 
-        size : 4, // 行和列的个数，默认为3
+        size : 3, // 行和列的个数，默认为3
 		callback : function(touchList){  //touchend 抬手时的回调 传入的参数为 手势的数组
 			alert(touchList);
 			//ul.reDrawPanel();
